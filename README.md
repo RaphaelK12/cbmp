@@ -4,7 +4,7 @@ C header library for loading/saving 24-bit BMP
 
 ## Usage
 
-Include cbmp.h into a c file. see main_test.c for an exemple
+Include cbmp.h into a single C file. see main_test.c for an exemple
 ``gcc main_test.c``
 
 
