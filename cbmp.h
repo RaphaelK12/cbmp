@@ -45,8 +45,8 @@ Bmp *bmp_init_save(unsigned long H, unsigned long W) {
 	file->img = NULL;
 	file->pad = (W * -3UL) & 3;
 	file->size = H * (W * 3 + file->pad) + 14 + 40;
-	file->data = malloc(sizeof(unsigned char) * file->size);
-	memset(file->data, 0, sizeof(unsigned char) * file->size);
+	file->data = malloc(file->size);
+	memset(file->data, 0, file->size);
 	file->data[0] = 0x42;
 	file->data[1] = 0x4D;
 	file->data[2] = file->size >>  0;
@@ -87,7 +87,9 @@ int		bmp_save(unsigned long H, unsigned long W, Pix **img, const char *file_name
 			p[2] = img[H-(y+1)][x].R;
 		}
 	}
-	write(fd, file->data, file->size*sizeof(unsigned char));
+	if (write(fd, file->data, file->size) != file->size) {
+		fprintf(stderr, "cbmp error: can't write to file");
+	}
 	close(fd);
 	bmp_delete(file);
 	return (1);
@@ -131,7 +133,7 @@ Bmp		*bmp_load(const char *file_name) {
 		return (NULL);
 	}
 	file = bmp_init_load(header);
-	line_size = sizeof(unsigned char) * ((file->W*3 + 3) & (~3));
+	line_size = (file->W*3 + 3) & (~3);
 	line = malloc(line_size);
 	for(int y = file->H-1; y >= 0; y--) {
 		if (read(fd, line, line_size) != line_size) {
